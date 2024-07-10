@@ -1,4 +1,4 @@
-import { MessageDto } from '../../dtos'
+import { MessageDto } from '@domain/dtos'
 
 export type RoleType = 'assistant' | 'user'
 

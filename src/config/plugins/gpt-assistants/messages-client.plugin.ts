@@ -2,8 +2,8 @@ import {
   Message,
   TextContentBlock,
 } from 'openai/resources/beta/threads/messages'
-import { MessageDto } from '../../../domain/dtos'
-import { OpenAiClient } from '../openai-client.plugin'
+import { MessageDto } from '@domain/dtos'
+import { OpenAiClient } from '@config/plugins'
 
 interface GetMessageListOptions {
   threadId: string

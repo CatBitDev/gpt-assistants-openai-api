@@ -1,6 +1,6 @@
 import { Thread } from 'openai/resources/beta/threads/threads'
-import { ThreadDto } from '../../../domain/dtos'
-import { OpenAiClient } from '../openai-client.plugin'
+import { ThreadDto } from '@domain/dtos'
+import { OpenAiClient } from '@config/plugins'
 
 export class ThreadsClientPlugin {
   private constructor(private readonly client: OpenAiClient) {}

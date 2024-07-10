@@ -1,4 +1,4 @@
-import { AssistantDto } from '../../dtos'
+import { AssistantDto } from '@domain/dtos'
 
 export type ModelType = 'gpt-4o' | 'gpt-3.5-turbo'
 

@@ -1,7 +1,7 @@
 import { Run } from 'openai/resources/beta/threads/runs/runs'
-import { MessageDto, RunDto } from '../../../domain/dtos'
-import { RunStatus } from '../../../domain/entities/gpt-assistants/run.entity'
-import { OpenAiClient } from '../openai-client.plugin'
+import { MessageDto, RunDto } from '@domain/dtos'
+import { RunStatus } from '@domain/entities'
+import { OpenAiClient } from '@config/plugins'
 import {
   Message,
   MessageDeltaEvent,

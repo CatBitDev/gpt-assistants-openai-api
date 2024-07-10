@@ -1,7 +1,7 @@
 import { Assistant } from 'openai/resources/beta/assistants'
-import { AssistantDto } from '../../../domain/dtos'
-import { ModelType } from '../../../domain/entities/gpt-assistants/assistant.entity'
-import { OpenAiClient } from '../openai-client.plugin'
+import { AssistantDto } from '@domain/dtos'
+import { GptModelType } from '@domain/entities'
+import { OpenAiClient } from '@config/plugins'
 
 export class AssistantsClientPlugin {
   private constructor(private readonly client: OpenAiClient) {}
@@ -27,7 +27,7 @@ export class AssistantsClientPlugin {
     const assistantDto = AssistantDto.create({
       description: response.description!,
       instructions: response.instructions!,
-      model: response.model! as ModelType,
+      model: response.model! as GptModelType,
       name: response.name!,
       temperature: response.temperature!,
       topP: response.top_p!,

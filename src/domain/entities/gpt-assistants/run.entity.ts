@@ -1,4 +1,4 @@
-import { RunDto } from '../../dtos'
+import { RunDto } from '@domain/dtos'
 
 export enum RunStatus {
   cancelled = 'cancelled',

@@ -1,4 +1,4 @@
-import { ThreadDto } from '../../dtos'
+import { ThreadDto } from '@domain/dtos'
 
 export class ThreadEntity {
   private constructor(

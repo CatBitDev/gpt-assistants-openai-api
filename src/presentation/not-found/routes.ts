@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { NotFoundController } from './controller'
+import { NotFoundController } from '@presentation/not-found/controller'
 
 export class NotFoundRoutes {
   static get routes(): Router {
