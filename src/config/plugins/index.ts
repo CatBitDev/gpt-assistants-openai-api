@@ -4,3 +4,5 @@ export {
   OpenAiClientPlugin,
   OpenAiClient,
 } from '@config/plugins/openai-client.plugin'
+export { BCryptPlugin } from '@config/plugins/bcrypt.plugin'
+export { JwtPlugin } from '@config/plugins/jwt.plugin'

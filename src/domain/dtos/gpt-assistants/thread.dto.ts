@@ -9,7 +9,7 @@ export class ThreadDto {
 
   public static create(openaiId: string = ''): ThreadDto {
     const createdAt = Date.now()
-    const id = UUID.uuidv4()
+    const id = UUID.nano()
 
     return new ThreadDto(createdAt, id, openaiId)
   }

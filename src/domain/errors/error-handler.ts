@@ -3,6 +3,9 @@ import { RequestError, VariableValidatorError } from '@domain/errors'
 
 export class CustomErrorHandling {
   public static handle(error: unknown, res: Response) {
+    if (res.headersSent) {
+      return error
+    }
     if (error instanceof VariableValidatorError) {
       return res.status(400).json({ error: error.message })
     }

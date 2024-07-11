@@ -1,15 +1,15 @@
 import { Request, Response } from 'express'
 import { AssistantService } from '@presentation/services/gpt-assistants'
-import { AssistantDto } from '@domain/dtos'
+import { CreateAssistantDto } from '@domain/dtos'
 import { CustomErrorHandling as err } from '@domain/errors'
 
 export class AssistantsController {
   constructor(private readonly assistantService: AssistantService) {}
 
-  public createAssistant = async (req: Request, res: Response) => {
+  public createAssistant = (req: Request, res: Response) => {
     const createAssistantDto = () => {
       try {
-        return AssistantDto.create(req.body)
+        return CreateAssistantDto.create(req.body)
       } catch (error) {
         err.handle(error, res)
       }
@@ -25,9 +25,9 @@ export class AssistantsController {
       })
   }
 
-  public getAssistantsList = async (req: Request, res: Response) => {}
+  public getAssistantsList = (req: Request, res: Response) => {}
 
-  public updateAssistantById = async (req: Request, res: Response) => {}
+  public updateAssistantById = (req: Request, res: Response) => {}
 
-  public deleteAssistantById = async (req: Request, res: Response) => {}
+  public deleteAssistantById = (req: Request, res: Response) => {}
 }

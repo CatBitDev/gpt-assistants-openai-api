@@ -1,21 +1,17 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose from 'mongoose'
 
 const AssistantSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-  },
   createdAt: {
     type: Date,
-    default: new Date(),
-  },
-  openaiId: {
-    type: String,
     required: true,
   },
   description: {
     type: String,
-    default: 'No description provided',
+    required: true,
+  },
+  id: {
+    type: String,
+    required: true,
   },
   instructions: {
     type: String,
@@ -23,10 +19,14 @@ const AssistantSchema = new mongoose.Schema({
   },
   model: {
     type: String,
-    default: ['gpt-3.5-turbo'],
     enum: ['gpt-4o', 'gpt-3.5-turbo'],
+    required: true,
   },
   name: {
+    type: String,
+    required: true,
+  },
+  openaiId: {
     type: String,
     required: true,
   },
@@ -36,6 +36,10 @@ const AssistantSchema = new mongoose.Schema({
   },
   topP: {
     type: Number,
+    required: true,
+  },
+  userId: {
+    type: String,
     required: true,
   },
 })

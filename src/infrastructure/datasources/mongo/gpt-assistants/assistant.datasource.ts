@@ -1,26 +1,46 @@
-import { MongoAssistantModel } from '@data/mongo'
+import { AssistantModel } from '@data/mongo'
 import { AssistantDatasource } from '@domain/datasources'
-import { AssistantDto } from '@domain/dtos'
+import { AssistantEntity } from '@domain/entities'
 
 export class MongoAssistantDatasource implements AssistantDatasource {
-  public async create(dto: AssistantDto): Promise<AssistantDto> {
-    const createdAssistant = MongoAssistantModel.create(dto)
-    console.log('Assistant created:', createdAssistant)
-    return dto
+  private static getProps(entity: AssistantEntity) {
+    return {
+      createdAt: entity.createdAt,
+      description: entity.description,
+      id: entity.id,
+      instructions: entity.instructions,
+      model: entity.model,
+      name: entity.name,
+      openaiId: entity.openaiId,
+      temperature: entity.temperature,
+      topP: entity.topP,
+      userId: entity.userId,
+    }
   }
+
+  public async create(entity: AssistantEntity): Promise<boolean> {
+    const props = MongoAssistantDatasource.getProps(entity)
+    const createdAssistant = await AssistantModel.create(props)
+    if (createdAssistant) return true
+    return false
+    //throw new Error('Method not implemented.')
+  }
+
   public async delete(assistantId: string): Promise<void> {
     throw new Error('Method not implemented.')
   }
-  public async getList(threadId: string): Promise<AssistantDto[] | null> {
+  public async getList(
+    threadId: string
+  ): Promise<AssistantEntity[] | undefined> {
     throw new Error('Method not implemented.')
   }
   public async getSingle(
     threadId: string,
     assistantId: string
-  ): Promise<AssistantDto | null> {
+  ): Promise<AssistantEntity | undefined> {
     throw new Error('Method not implemented.')
   }
-  public async update(dto: AssistantDto): Promise<AssistantDto> {
+  public async update(entity: AssistantEntity): Promise<boolean> {
     throw new Error('Method not implemented.')
   }
 }

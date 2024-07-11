@@ -1,12 +1,14 @@
-import { AssistantDto } from '@domain/dtos'
+import { AssistantEntity } from '@/domain/entities'
 
 export abstract class AssistantRepository {
-  public abstract create(dto: AssistantDto): Promise<AssistantDto>
+  public abstract create(entity: AssistantEntity): Promise<boolean>
   public abstract delete(assistantId: string): Promise<void>
-  public abstract getList(threadId: string): Promise<AssistantDto[] | null>
+  public abstract getList(
+    threadId: string
+  ): Promise<AssistantEntity[] | undefined>
   public abstract getSingle(
     threadId: string,
     assistantId: string
-  ): Promise<AssistantDto | null>
-  public abstract update(dto: AssistantDto): Promise<AssistantDto>
+  ): Promise<AssistantEntity | undefined>
+  public abstract update(entity: AssistantEntity): Promise<boolean>
 }

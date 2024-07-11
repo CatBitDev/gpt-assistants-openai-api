@@ -1,5 +1,3 @@
-// export * from './user/create-user.dto'
-export * from './gpt-assistants/assistant.dto'
-export * from './gpt-assistants/thread.dto'
-export * from './gpt-assistants/message.dto'
-export * from './gpt-assistants/run.dto'
+export * from '@domain/dtos/gpt-assistants'
+export * from '@domain/dtos/shared'
+export * from '@domain/dtos/user'

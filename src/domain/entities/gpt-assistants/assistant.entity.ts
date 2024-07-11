@@ -1,12 +1,24 @@
-import { AssistantDto } from '@domain/dtos'
+import { UUID } from '@/config/plugins'
 
 export type ModelType = 'gpt-4o' | 'gpt-3.5-turbo'
+
+interface CreateAssistantEntityOptions {
+  openaiId: string
+  userId: string
+  description: string
+  instructions: string
+  model: ModelType
+  name: string
+  temperature: number
+  topP: number
+}
 
 export class AssistantEntity {
   private constructor(
     private readonly _createdAt: number,
     private readonly _id: string,
     private readonly _openaiId: string,
+    private readonly _userId: string,
     private _description: string,
     private _instructions: string,
     private _model: ModelType,
@@ -15,17 +27,32 @@ export class AssistantEntity {
     private _topP: number
   ) {}
 
-  public static createFromDto(dto: AssistantDto): AssistantEntity {
+  public static create(options: CreateAssistantEntityOptions): AssistantEntity {
+    const createdAt = new Date().getTime()
+    const id = UUID.nano()
+
+    const {
+      openaiId,
+      userId,
+      description,
+      instructions,
+      model,
+      name,
+      temperature,
+      topP,
+    } = options
+
     return new AssistantEntity(
-      dto.createdAt,
-      dto.id,
-      dto.openaiId,
-      dto.description,
-      dto.instructions,
-      dto.model,
-      dto.name,
-      dto.temperature,
-      dto.topP
+      createdAt,
+      id,
+      openaiId,
+      userId,
+      description,
+      instructions,
+      model,
+      name,
+      temperature,
+      topP
     )
   }
 
@@ -41,6 +68,10 @@ export class AssistantEntity {
     return this._openaiId
   }
 
+  public get userId(): string {
+    return this._userId
+  }
+
   public get description(): string {
     return this._description
   }
@@ -49,7 +80,7 @@ export class AssistantEntity {
     return this._instructions
   }
 
-  public get model(): string {
+  public get model(): ModelType {
     return this._model
   }
 

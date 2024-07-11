@@ -10,4 +10,5 @@ export class Envs {
   public static readonly MONGO_DB_NAME = get('MONGO_DB_NAME')
     .required()
     .asString()
+  public static readonly JWT_SECRET = get('JWT_SECRET').required().asString()
 }

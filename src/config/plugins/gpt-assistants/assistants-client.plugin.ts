@@ -1,6 +1,5 @@
-import { Assistant } from 'openai/resources/beta/assistants'
-import { AssistantDto } from '@domain/dtos'
-import { GptModelType } from '@domain/entities'
+import { AssistantCreateParams } from 'openai/resources/beta/assistants'
+import { CreateAssistantDto } from '@domain/dtos'
 import { OpenAiClient } from '@config/plugins'
 
 export class AssistantsClientPlugin {
@@ -10,8 +9,10 @@ export class AssistantsClientPlugin {
     return new AssistantsClientPlugin(client)
   }
 
-  private static createParamsObject(dto: AssistantDto) {
-    const options = {
+  private static createParamsObject(
+    dto: CreateAssistantDto
+  ): AssistantCreateParams {
+    return {
       description: dto.description,
       instructions: dto.instructions,
       model: dto.model,
@@ -19,43 +20,39 @@ export class AssistantsClientPlugin {
       temperature: dto.temperature,
       top_p: dto.topP,
     }
-
-    return options
   }
 
-  private static createDtoFromResponse(response: Assistant): AssistantDto {
-    const assistantDto = AssistantDto.create({
-      description: response.description!,
-      instructions: response.instructions!,
-      model: response.model! as GptModelType,
-      name: response.name!,
-      temperature: response.temperature!,
-      topP: response.top_p!,
-      openaiId: response.id,
-    })
-
-    return assistantDto
+  public async create(
+    assistantDto: CreateAssistantDto
+  ): Promise<string | boolean> {
+    const options = AssistantsClientPlugin.createParamsObject(assistantDto)
+    return this.client.beta.assistants
+      .create(options)
+      .then((response) => {
+        if (!response.id) return false
+        return response.id
+      })
+      .catch(() => false)
   }
 
-  public async create(dto: AssistantDto): Promise<AssistantDto> {
-    const options = AssistantsClientPlugin.createParamsObject(dto)
-    const createdAssistant = await this.client.beta.assistants.create(options)
-
-    return AssistantsClientPlugin.createDtoFromResponse(createdAssistant)
-  }
-
-  public async update(dto: AssistantDto): Promise<AssistantDto> {
-    const options = AssistantsClientPlugin.createParamsObject(dto)
-    const updatedAssistant = await this.client.beta.assistants.update(
-      dto.openaiId,
-      options
-    )
-
-    return AssistantsClientPlugin.createDtoFromResponse(updatedAssistant)
+  public async update(
+    assistantDto: CreateAssistantDto,
+    openaiId: string
+  ): Promise<boolean> {
+    const options = AssistantsClientPlugin.createParamsObject(assistantDto)
+    return this.client.beta.assistants
+      .update(openaiId, options)
+      .then((response) => {
+        if (!response.id) return false
+        return true
+      })
+      .catch(() => false)
   }
 
   public async delete(openaiId: string): Promise<boolean> {
-    const response = await this.client.beta.assistants.del(openaiId)
-    return response.deleted
+    return this.client.beta.assistants
+      .del(openaiId)
+      .then((response) => response.deleted)
+      .catch(() => false)
   }
 }

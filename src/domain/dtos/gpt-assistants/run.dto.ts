@@ -51,7 +51,7 @@ export class RunDto {
         totalTokens: 0,
       },
     } = options
-    const id = UUID.uuidv4()
+    const id = UUID.nano()
     const createdAt = Date.now()
 
     assistantId = assess({ assistantId }).asString()

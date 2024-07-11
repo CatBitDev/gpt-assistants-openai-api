@@ -7,28 +7,50 @@ import {
   asIntNegative,
   asPortNumber,
 } from '@domain/variable-validator/accessors/int'
-import { asString } from '@domain/variable-validator/accessors/string'
+import {
+  asFloat,
+  asFloatPositive,
+  asFloatNegative,
+} from '@domain/variable-validator/accessors/float'
+import {
+  asString,
+  asPasswordString,
+  asEmailString,
+  asUsernameString,
+} from '@domain/variable-validator/accessors/string'
 
 export interface IVariableAccessors {
-  asPortNumber: () => number
-  asInt: () => number
-  asIntPositive: () => number
-  asIntNegative: () => number
+  asArray: () => any[]
   asBool: () => boolean
   asBoolStrict: () => boolean
-  asString: () => string
-  asArray: () => any[]
+  asFloat: () => number
+  asFloatNegative: () => number
+  asFloatPositive: () => number
+  asInt: () => number
+  asIntNegative: () => number
+  asIntPositive: () => number
+  asPortNumber: () => number
   asSet: () => Set<any>
+  asString: () => string
+  asPasswordString: () => string
+  asEmailString: () => string
+  asUsernameString: () => string
 }
 
 export const variableAccessors = {
+  asArray,
   asBool,
   asBoolStrict,
+  asFloat,
+  asFloatNegative,
+  asFloatPositive,
   asInt,
-  asIntPositive,
   asIntNegative,
+  asIntPositive,
   asPortNumber,
-  asString,
-  asArray,
   asSet,
+  asString,
+  asPasswordString,
+  asEmailString,
+  asUsernameString,
 }

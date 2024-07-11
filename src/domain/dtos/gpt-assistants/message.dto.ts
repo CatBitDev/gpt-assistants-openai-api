@@ -30,7 +30,7 @@ export class MessageDto {
       content,
       threadId,
     } = options
-    const id = UUID.uuidv4()
+    const id = UUID.nano()
     const createdAt = Date.now()
 
     assess({ role }).asString()
