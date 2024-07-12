@@ -5,6 +5,7 @@ import {
   RunsClientPlugin,
   ThreadsClientPlugin,
 } from '@config/plugins/gpt-assistants'
+import { LoggerPlugin } from '@config/plugins'
 
 export type OpenAiClient = OpenAI
 export interface ClientOptions {
@@ -35,10 +36,15 @@ export class OpenAiClientPlugin {
       project: this.project,
     })
 
-    this.assistantsClientPlugin = AssistantsClientPlugin.create(this.openai)
-    this.messagesClientPlugin = MessagesClientPlugin.create(this.openai)
-    this.runsClientPlugin = RunsClientPlugin.create(this.openai)
-    this.threadsClientPlugin = ThreadsClientPlugin.create(this.openai)
+    const logger = LoggerPlugin.instance
+
+    this.assistantsClientPlugin = AssistantsClientPlugin.create(
+      this.openai,
+      logger
+    )
+    this.messagesClientPlugin = MessagesClientPlugin.create(this.openai, logger)
+    this.runsClientPlugin = RunsClientPlugin.create(this.openai, logger)
+    this.threadsClientPlugin = ThreadsClientPlugin.create(this.openai, logger)
   }
 
   public static create(options: ClientOptions): OpenAiClientPlugin {

@@ -1,1 +1,4 @@
-export { AuthService } from '@presentation/services/auth/auth.service'
+export {
+  AuthService,
+  UserTokenPayload,
+} from '@presentation/services/auth/auth.service'

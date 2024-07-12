@@ -3,7 +3,7 @@ import {
   TextContentBlock,
 } from 'openai/resources/beta/threads/messages'
 import { MessageDto } from '@domain/dtos'
-import { OpenAiClient } from '@config/plugins'
+import { LoggerPlugin, OpenAiClient } from '@config/plugins'
 
 interface GetMessageListOptions {
   threadId: string
@@ -22,10 +22,16 @@ interface DeleteMessageOptions {
 }
 
 export class MessagesClientPlugin {
-  private constructor(private readonly client: OpenAiClient) {}
+  private constructor(
+    private readonly client: OpenAiClient,
+    private readonly logger: LoggerPlugin
+  ) {}
 
-  static create(client: OpenAiClient): MessagesClientPlugin {
-    return new MessagesClientPlugin(client)
+  static create(
+    client: OpenAiClient,
+    logger: LoggerPlugin
+  ): MessagesClientPlugin {
+    return new MessagesClientPlugin(client, logger)
   }
 
   private static createParamsObject(dto: MessageDto) {

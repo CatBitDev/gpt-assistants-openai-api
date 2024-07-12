@@ -1,5 +1,6 @@
 import { jwtVerify, SignJWT } from 'jose'
 import { RequestError } from '@/domain/errors'
+import { LoggerPlugin } from './logger.plugin'
 
 interface GenerateTokenOptions {
   payload: { [key: string]: any }
@@ -17,8 +18,12 @@ interface ValidateTokenOptions {
 export class JwtPlugin {
   private readonly secret: Uint8Array
 
-  constructor(private readonly jwt_secret: string) {
-    this.secret = new TextEncoder().encode(jwt_secret)
+  constructor(
+    private readonly jwt_secret: string,
+    private readonly logger: LoggerPlugin,
+    private readonly service: string = 'jwt-plugin'
+  ) {
+    this.secret = new TextEncoder().encode(this.jwt_secret)
   }
 
   public async generateToken(options: GenerateTokenOptions): Promise<string> {
@@ -43,6 +48,9 @@ export class JwtPlugin {
         .sign(this.secret)
         .then((token) => token)
         .catch((error) => {
+          this.logger.error(`${error}`, this.service, {
+            error: error.stack,
+          })
           throw RequestError.internalServerError(error)
         })
     )
@@ -62,7 +70,8 @@ export class JwtPlugin {
         return result.payload as T
       })
       .catch((error) => {
-        throw RequestError.unauthorized(error)
+        this.logger.warn(`${error}`, this.service, { error: error.stack })
+        throw RequestError.unauthorized('Invalid token')
       })
   }
 }

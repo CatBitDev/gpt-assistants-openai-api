@@ -1,7 +1,7 @@
 import { Run } from 'openai/resources/beta/threads/runs/runs'
 import { MessageDto, RunDto } from '@domain/dtos'
 import { RunStatus } from '@domain/entities'
-import { OpenAiClient } from '@config/plugins'
+import { LoggerPlugin, OpenAiClient } from '@config/plugins'
 import {
   Message,
   MessageDeltaEvent,
@@ -17,10 +17,13 @@ interface HandleStreamOptions {
 }
 
 export class RunsClientPlugin {
-  private constructor(private readonly client: OpenAiClient) {}
+  private constructor(
+    private readonly client: OpenAiClient,
+    private readonly logger: LoggerPlugin
+  ) {}
 
-  static create(client: OpenAiClient): RunsClientPlugin {
-    return new RunsClientPlugin(client)
+  static create(client: OpenAiClient, logger: LoggerPlugin): RunsClientPlugin {
+    return new RunsClientPlugin(client, logger)
   }
 
   private static createParamsObject(dto: RunDto) {

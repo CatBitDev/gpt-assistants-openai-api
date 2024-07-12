@@ -23,7 +23,6 @@ export class RequestError extends Error {
   }
 
   static internalServerError(message: string) {
-    console.log({ error: message })
     return new RequestError(500, 'Internal server error')
   }
 }

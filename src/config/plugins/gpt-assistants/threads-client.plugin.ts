@@ -1,12 +1,18 @@
 import { Thread } from 'openai/resources/beta/threads/threads'
 import { ThreadDto } from '@domain/dtos'
-import { OpenAiClient } from '@config/plugins'
+import { LoggerPlugin, OpenAiClient } from '@config/plugins'
 
 export class ThreadsClientPlugin {
-  private constructor(private readonly client: OpenAiClient) {}
+  private constructor(
+    private readonly client: OpenAiClient,
+    private readonly logger: LoggerPlugin
+  ) {}
 
-  static create(client: OpenAiClient): ThreadsClientPlugin {
-    return new ThreadsClientPlugin(client)
+  static create(
+    client: OpenAiClient,
+    logger: LoggerPlugin
+  ): ThreadsClientPlugin {
+    return new ThreadsClientPlugin(client, logger)
   }
 
   private static createDtoFromResponse(response: Thread): ThreadDto {

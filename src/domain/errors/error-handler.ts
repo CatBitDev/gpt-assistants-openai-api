@@ -3,16 +3,24 @@ import { RequestError, VariableValidatorError } from '@domain/errors'
 
 export class CustomErrorHandling {
   public static handle(error: unknown, res: Response) {
+    let message = ''
+    let stack = ''
+    if (error instanceof Error) stack = `${error.stack}`
     if (res.headersSent) {
-      return error
+      message = 'Headers already sent'
+      return { message, stack }
     }
     if (error instanceof VariableValidatorError) {
-      return res.status(400).json({ error: error.message })
+      res.status(400).json({ error: error.message })
+      message = error.message
+      return { message, stack }
     }
     if (error instanceof RequestError) {
-      return res.status(error.statusCode).json({ error: error.message })
+      res.status(error.statusCode).json({ error: error.message })
+      message = error.message
+      return { message, stack }
     }
-    console.log(`${error}`)
-    return res.status(500).json({ error: 'Internal server error' })
+    res.status(500).json({ error: 'Internal server error' })
+    return { message, stack }
   }
 }

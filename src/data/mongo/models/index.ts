@@ -3,3 +3,4 @@ export { AssistantModel } from '@/data/mongo/models/gpt-assistants/assistant.mod
 // export { ThreadModel } from '@data/mongo/models/gpt-assistants/thread.model'
 // export { RunModel } from '@data/mongo/models/gpt-assistants/run.model'
 export { UserModel } from '@/data/mongo/models/user/user.model'
+export { LogModel } from '@/data/mongo/models/log/log.model'

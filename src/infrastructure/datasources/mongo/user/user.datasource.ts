@@ -1,78 +1,79 @@
 import { UserModel } from '@data/mongo'
 import { UserDatasource } from '@/domain/datasources'
-import { CreateUserFromModelOptions, UserEntity } from '@/domain/entities'
-import { PaginationDto } from '@/domain/dtos'
+import { UserEntity } from '@/domain/entities'
+import { PaginationDto, RegisterUserDto } from '@/domain/dtos'
+import { UserMapper } from '@/domain/mappers'
 
 export class MongoUserDatasource implements UserDatasource {
-  public async create(entity: UserEntity): Promise<boolean> {
-    const props = MongoUserDatasource.getProps(entity)
-    const createdUser = await UserModel.create(props)
-    if (createdUser) return true
-    return false
+  private readonly model
+
+  constructor(private readonly userModel: UserModel) {
+    this.model = this.userModel.model
   }
-  public async delete(userId: string): Promise<boolean> {
-    const deletedUser = await UserModel.deleteOne({ id: userId })
-    if (deletedUser) return true
-    return false
+
+  public async register(dto: RegisterUserDto): Promise<UserEntity> {
+    const userEntity = UserMapper.toEntity(dto)
+    const props = this.getPropsFromEntity(userEntity)
+    const createdUser = await this.model.create(props)
+
+    return this.getEntityFromModel(createdUser)
+  }
+
+  public async delete(userId: string): Promise<UserEntity | undefined> {
+    const deletedUser = await this.model.deleteOne({ id: userId })
+    return this.getEntityFromModel(deletedUser)
   }
   public async getList(
     pagination: PaginationDto
-  ): Promise<UserEntity[] | undefined> {
+  ): Promise<{ users: UserEntity[]; pagination: PaginationDto } | undefined> {
     const { page, limit } = pagination
-    const userList = await UserModel.find()
-      .skip((page - 1) * limit)
-      .limit(limit)
+    const [total, userList] = await Promise.all([
+      this.model.countDocuments(),
+      this.model
+        .find()
+        .skip((page - 1) * limit)
+        .limit(limit),
+    ])
 
     if (!userList) return undefined
 
     const userEntities = userList.map((user) => {
-      return MongoUserDatasource.createEntity(user)
+      return this.getEntityFromModel(user)
     })
 
-    return userEntities
+    const paginationDto = PaginationDto.create({
+      page,
+      limit,
+      total,
+    })
+    return { users: userEntities, pagination: paginationDto }
   }
-  public async findById(id: string): Promise<UserEntity | undefined> {
-    const user = await UserModel.findOne({ id })
-    if (!user) return undefined
 
-    return MongoUserDatasource.createEntity(user)
+  public async findById(id: string): Promise<UserEntity | undefined> {
+    return this.findOne({ _id: id })
   }
 
   public async findByEmail(email: string): Promise<UserEntity | undefined> {
-    const user = await UserModel.findOne({ email })
-    if (!user) return undefined
-
-    return MongoUserDatasource.createEntity(user)
+    return this.findOne({ email })
   }
 
-  public async isEmailAvailable(email: string): Promise<boolean> {
-    return await MongoUserDatasource.checkPropertyIsAvailable({ email })
-  }
-
-  public async isUsernameAvailable(username: string): Promise<boolean> {
-    return await MongoUserDatasource.checkPropertyIsAvailable({ username })
+  public async findByUsername(
+    username: string
+  ): Promise<UserEntity | undefined> {
+    return this.findOne({ username })
   }
 
   public async update(entity: UserEntity): Promise<boolean> {
-    const props = MongoUserDatasource.getProps(entity)
-    const updatedUser = await UserModel.updateOne({ id: entity.id }, props)
+    const props = this.getPropsFromEntity(entity)
+    const updatedUser = await this.model.updateOne({ id: entity.id }, props)
     if (updatedUser) return true
     return false
   }
 
-  private static async checkPropertyIsAvailable(query: {
-    [key: string]: any
-  }): Promise<boolean> {
-    const user = await UserModel.findOne(query)
-    if (!user) return true
-    return false
-  }
-
-  private static getProps(entity: UserEntity) {
+  private getPropsFromEntity(entity: UserEntity) {
     return {
       createdAt: entity.createdAt,
       email: entity.email,
-      id: entity.id,
       isEmailValidated: entity.isEmailValidated,
       password: entity.password,
       role: entity.role,
@@ -80,13 +81,29 @@ export class MongoUserDatasource implements UserDatasource {
     }
   }
 
-  private static createEntity(response: { [key: string]: any }): UserEntity {
-    const { createdAt, id, email, isEmailValidated, password, role, username } =
-      response
+  private async findOne(options: {
+    [key: string]: unknown
+  }): Promise<UserEntity | undefined> {
+    const user = await this.model.findOne(options)
+    if (!user) return undefined
+
+    return this.getEntityFromModel(user)
+  }
+
+  private getEntityFromModel(response: { [key: string]: any }): UserEntity {
+    const {
+      createdAt,
+      _id,
+      email,
+      isEmailValidated,
+      password,
+      role,
+      username,
+    } = response
 
     return UserEntity.fromModel({
       createdAt,
-      id,
+      id: _id.toString(),
       email,
       isEmailValidated,
       password,

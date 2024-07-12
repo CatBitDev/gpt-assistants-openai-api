@@ -1,12 +1,19 @@
 import { AssistantCreateParams } from 'openai/resources/beta/assistants'
 import { CreateAssistantDto } from '@domain/dtos'
-import { OpenAiClient } from '@config/plugins'
+import { LoggerPlugin, OpenAiClient } from '@config/plugins'
 
 export class AssistantsClientPlugin {
-  private constructor(private readonly client: OpenAiClient) {}
+  private constructor(
+    private readonly client: OpenAiClient,
+    private readonly logger: LoggerPlugin,
+    private readonly service: string = 'assistants-client-plugin'
+  ) {}
 
-  static create(client: OpenAiClient): AssistantsClientPlugin {
-    return new AssistantsClientPlugin(client)
+  static create(
+    client: OpenAiClient,
+    logger: LoggerPlugin
+  ): AssistantsClientPlugin {
+    return new AssistantsClientPlugin(client, logger)
   }
 
   private static createParamsObject(
@@ -29,10 +36,18 @@ export class AssistantsClientPlugin {
     return this.client.beta.assistants
       .create(options)
       .then((response) => {
-        if (!response.id) return false
-        return response.id
+        if (response.id) return response.id
+        this.logger.http("Couldn't create assistant", this.service)
+        return false
       })
-      .catch(() => false)
+      .catch((error) => {
+        this.logger.error(
+          `Error creating assistant: ${error.message}`,
+          this.service,
+          { error: error.stack }
+        )
+        return false
+      })
   }
 
   public async update(
@@ -46,13 +61,27 @@ export class AssistantsClientPlugin {
         if (!response.id) return false
         return true
       })
-      .catch(() => false)
+      .catch((error) => {
+        this.logger.error(
+          `Error updating assistant: ${error.message}`,
+          this.service,
+          { error: error.stack }
+        )
+        return false
+      })
   }
 
   public async delete(openaiId: string): Promise<boolean> {
     return this.client.beta.assistants
       .del(openaiId)
       .then((response) => response.deleted)
-      .catch(() => false)
+      .catch((error) => {
+        this.logger.error(
+          `Error deleting assistant: ${error.message}`,
+          this.service,
+          { error: error.stack }
+        )
+        return false
+      })
   }
 }

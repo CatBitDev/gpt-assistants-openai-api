@@ -1,18 +1,33 @@
 import { UserDatasource } from '@domain/datasources'
 import { UserEntity } from '@/domain/entities'
 import { UserRepository } from '@/domain/repository'
-import { PaginationDto } from '@/domain/dtos'
+import { PaginationDto, RegisterUserDto } from '@/domain/dtos'
+import { RegistryDatasource } from '@/infrastructure/datasources/registry.datasource'
 
 export class UserRepositoryImpl implements UserRepository {
-  constructor(private readonly userDatasource: UserDatasource) {}
+  private static _instance: UserRepositoryImpl
+  private readonly userDatasource: UserDatasource
 
-  public create(entity: UserEntity): Promise<boolean> {
-    return this.userDatasource.create(entity)
+  private constructor() {
+    this.userDatasource = RegistryDatasource.instance.user
   }
-  public delete(userId: string): Promise<boolean> {
+
+  public static get instance(): UserRepositoryImpl {
+    if (!UserRepositoryImpl._instance) {
+      UserRepositoryImpl._instance = new UserRepositoryImpl()
+    }
+    return UserRepositoryImpl._instance
+  }
+
+  public register(dto: RegisterUserDto): Promise<UserEntity> {
+    return this.userDatasource.register(dto)
+  }
+  public delete(userId: string): Promise<UserEntity | undefined> {
     return this.userDatasource.delete(userId)
   }
-  public getList(pagination: PaginationDto): Promise<UserEntity[] | undefined> {
+  public getList(
+    pagination: PaginationDto
+  ): Promise<{ users: UserEntity[]; pagination: PaginationDto } | undefined> {
     return this.userDatasource.getList(pagination)
   }
   public findById(userId: string): Promise<UserEntity | undefined> {
@@ -21,11 +36,8 @@ export class UserRepositoryImpl implements UserRepository {
   public findByEmail(email: string): Promise<UserEntity | undefined> {
     return this.userDatasource.findByEmail(email)
   }
-  public isEmailAvailable(email: string): Promise<boolean> {
-    return this.userDatasource.isEmailAvailable(email)
-  }
-  public isUsernameAvailable(username: string): Promise<boolean> {
-    return this.userDatasource.isUsernameAvailable(username)
+  public findByUsername(email: string): Promise<UserEntity | undefined> {
+    return this.userDatasource.findByUsername(email)
   }
   public update(entity: UserEntity): Promise<boolean> {
     return this.userDatasource.update(entity)

@@ -3,7 +3,7 @@ node_modules/
 # Build files
 dist/
 # Logs
-logs/
+/logs
 # Environment variables
 .env
 # docker files

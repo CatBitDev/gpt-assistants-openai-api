@@ -1,44 +1,48 @@
-import mongoose from 'mongoose'
+import mongoose, { Connection } from 'mongoose'
 
-const userSchema = new mongoose.Schema({
-  createdAt: {
-    type: Date,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  id: {
-    type: String,
-    required: true,
-  },
-  isEmailValidated: {
-    type: Boolean,
-    default: false,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: [String],
-    enum: ['ADMIN', 'USER'],
-    required: true,
-  },
-  username: {
-    type: String,
-    required: true,
-  },
-})
+export class UserModel {
+  private readonly userSchema
 
-userSchema.set('toJSON', {
-  virtuals: true,
-  versionKey: false,
-  transform: function (doc, ret, options) {
-    delete ret._id
-    delete ret.password
-  },
-})
+  constructor(private readonly assistantsDbConnection: Connection) {
+    this.userSchema = new mongoose.Schema({
+      createdAt: {
+        type: Date,
+        required: true,
+      },
+      email: {
+        type: String,
+        required: true,
+      },
+      isEmailValidated: {
+        type: Boolean,
+        default: false,
+      },
+      password: {
+        type: String,
+        required: true,
+      },
+      role: {
+        type: [String],
+        enum: ['ADMIN', 'USER'],
+        required: true,
+      },
+      username: {
+        type: String,
+        required: true,
+      },
+    })
 
-export const UserModel = mongoose.model('User', userSchema)
+    this.userSchema.set('toJSON', {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret, options) {
+        delete ret._id
+        delete ret.password
+      },
+    })
+  }
+
+  public get model() {
+    return this.assistantsDbConnection.model('User', this.userSchema)
+  }
+}

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose, { Connection } from 'mongoose'
 
 interface ConnectionOptions {
   mongoUrl: string
@@ -6,21 +6,42 @@ interface ConnectionOptions {
 }
 
 export class MongoDatabase {
-  static async connect(options: ConnectionOptions) {
+  private static connections: Map<string, Connection> = new Map()
+
+  static async connect(options: ConnectionOptions): Promise<Connection> {
     const { mongoUrl, dbName } = options
 
+    if (this.connections.has(dbName)) {
+      return this.connections.get(dbName)!
+    }
+
     try {
-      await mongoose.connect(mongoUrl, {
+      const connection = await mongoose.createConnection(mongoUrl, {
         dbName: dbName,
       })
-      return true
+      this.connections.set(dbName, connection)
+      return connection
     } catch (error) {
-      console.log('Mongo connection error')
+      //TODO: mover al servicio logger
+      console.log('Mongo connection error', error)
       throw error
     }
   }
 
-  static async disconnect() {
-    await mongoose.disconnect()
+  static getConnection(dbName: string): Connection | undefined {
+    return this.connections.get(dbName)
+  }
+
+  static async disconnect(dbName: string): Promise<boolean> {
+    if (!dbName) return false
+
+    const connection = this.connections.get(dbName)
+    if (connection) {
+      await connection.close()
+      this.connections.delete(dbName)
+      return true
+    }
+
+    return false
   }
 }

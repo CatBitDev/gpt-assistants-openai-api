@@ -3,6 +3,11 @@ import { AssistantDatasource } from '@domain/datasources'
 import { AssistantEntity } from '@domain/entities'
 
 export class MongoAssistantDatasource implements AssistantDatasource {
+  private readonly model
+  constructor(private readonly assistantModel: AssistantModel) {
+    this.model = this.assistantModel.model
+  }
+
   private static getProps(entity: AssistantEntity) {
     return {
       createdAt: entity.createdAt,
@@ -20,7 +25,7 @@ export class MongoAssistantDatasource implements AssistantDatasource {
 
   public async create(entity: AssistantEntity): Promise<boolean> {
     const props = MongoAssistantDatasource.getProps(entity)
-    const createdAssistant = await AssistantModel.create(props)
+    const createdAssistant = await this.model.create(props)
     if (createdAssistant) return true
     return false
     //throw new Error('Method not implemented.')
