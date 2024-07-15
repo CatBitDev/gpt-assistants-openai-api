@@ -1,5 +1,6 @@
 import { UserRoles } from '@domain/entities/user'
 import { assess } from '@domain/variable-validator'
+import { VariableValidatorError as VarError } from '@/domain/errors'
 
 export interface CreateRegisterUserDtoParams {
   email: string
@@ -18,6 +19,11 @@ export class RegisterUserDto {
 
   public static create(options: CreateRegisterUserDtoParams): RegisterUserDto {
     let { email, password, username } = options
+
+    // Check password blank spaces here to avoid string trimming
+    const BLANK_SPACE_REGEX = /(?=.* )/
+    if (BLANK_SPACE_REGEX.test(password!))
+      throw VarError.assessmentError('Password should not contain blank spaces')
 
     email = assess({ email }).asEmailString()
     password = assess({ password }).asPasswordString()

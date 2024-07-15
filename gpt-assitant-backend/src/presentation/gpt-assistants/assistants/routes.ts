@@ -17,6 +17,7 @@ export class AssistantsRoutes {
 
     router.post('/', controller.createAssistant)
     router.get('/', controller.getAssistantsList)
+    router.get('/:id', controller.getAssistantById)
     router.put('/:id', controller.updateAssistantById)
     router.delete('/:id', controller.deleteAssistantById)
 

@@ -1,7 +1,15 @@
-import { AssistantDatasource } from '@domain/datasources/gpt-assistants'
-import { AssistantEntity } from '@domain/entities/gpt-assistants'
+import { RegistryDatasource } from '@/infrastructure/datasources/registry.datasource'
+import {
+  AssistantDatasource,
+  CreateOptions,
+  DeleteOptions,
+  FindByIdOptions,
+  FindByUserIdOptions,
+  UpdateOptions,
+  SingleResponse,
+  ListResponse,
+} from '@domain/datasources/gpt-assistants'
 import { AssistantRepository } from '@domain/repository/gpt-assistants'
-import { RegistryDatasource } from '@infrastructure/datasources/registry.datasource'
 
 export class AssistantRepositoryImpl implements AssistantRepository {
   private static _instance: AssistantRepositoryImpl
@@ -18,24 +26,19 @@ export class AssistantRepositoryImpl implements AssistantRepository {
     return AssistantRepositoryImpl._instance
   }
 
-  public async create(entity: AssistantEntity): Promise<boolean> {
-    return this.assistantDatasource.create(entity)
+  public create(opt: CreateOptions): Promise<SingleResponse> {
+    return this.assistantDatasource.create(opt)
   }
-  public async delete(assistantId: string): Promise<void> {
-    return this.assistantDatasource.delete(assistantId)
+  public delete(opt: DeleteOptions): Promise<SingleResponse> {
+    return this.assistantDatasource.delete(opt)
   }
-  public async getList(
-    threadId: string
-  ): Promise<AssistantEntity[] | undefined> {
-    return this.assistantDatasource.getList(threadId)
+  public findById(opt: FindByIdOptions): Promise<SingleResponse> {
+    return this.assistantDatasource.findById(opt)
   }
-  public async getSingle(
-    threadId: string,
-    assistantId: string
-  ): Promise<AssistantEntity | undefined> {
-    return this.assistantDatasource.getSingle(threadId, assistantId)
+  public findByUserId(opt: FindByUserIdOptions): Promise<ListResponse> {
+    return this.assistantDatasource.findByUserId(opt)
   }
-  public async update(entity: AssistantEntity): Promise<boolean> {
-    return this.assistantDatasource.update(entity)
+  public update(opt: UpdateOptions): Promise<SingleResponse> {
+    return this.assistantDatasource.update(opt)
   }
 }

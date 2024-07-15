@@ -19,6 +19,7 @@ export const asEmailString = (
   return [undefined, emailString]
 }
 
+// This function throws an error to avoid sending the password in client response
 export const asPasswordString = (
   value: unknown
 ): [error?: string, result?: string] => {
@@ -26,11 +27,44 @@ export const asPasswordString = (
 
   if (error) throw VarError.assessmentError('Password should be a string')
 
-  const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
-  if (!PASSWORD_REGEX.test(passwordString!))
-    throw VarError.assessmentError('Password should be a valid password')
+  /**
+   * At least one lowercase letter (?=.*[a-z])
+   * At least one uppercase letter (?=.*[A-Z])
+   * At least one digit (?=.*[0-9])
+   * At least one special character  (?=.*\W)
+   * No blank spaces (?!.* )
+   * Minimum 8 characters .{8,32}
+   */
+  const PASSWORD_REGEX =
+    /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,32}$/
+  if (PASSWORD_REGEX.test(passwordString!)) return [undefined, passwordString]
 
-  return [undefined, passwordString]
+  const LOWERCASE_REGEX = /(?=.*[a-z])/
+  const UPPERCASE_REGEX = /(?=.*[A-Z])/
+  const DIGIT_REGEX = /(?=.*[0-9])/
+  const SPECIAL_CHAR_REGEX = /(?=.*\W)/
+  const MIN_LENGTH_REGEX = /.{8,32}/
+
+  let invalidPasswordMessage =
+    'Invalid password missing the following parameters: '
+  const missingParams = []
+  if (!LOWERCASE_REGEX.test(passwordString!))
+    missingParams.push('one lowercase letter')
+
+  if (!UPPERCASE_REGEX.test(passwordString!))
+    missingParams.push('one uppercase letter')
+
+  if (!DIGIT_REGEX.test(passwordString!)) missingParams.push('one digit')
+
+  if (!SPECIAL_CHAR_REGEX.test(passwordString!))
+    missingParams.push('one special character')
+
+  if (!MIN_LENGTH_REGEX.test(passwordString!))
+    missingParams.push('minimum 8 characters')
+
+  invalidPasswordMessage += missingParams.join(', ')
+
+  throw VarError.assessmentError(invalidPasswordMessage)
 }
 
 export const asUsernameString = (

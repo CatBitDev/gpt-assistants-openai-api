@@ -1,13 +1,15 @@
 import { UUID } from '@config/plugins'
 
-export type ModelType = 'gpt-4o' | 'gpt-3.5-turbo'
+export type GptModelType = 'gpt-4o' | 'gpt-3.5-turbo'
 
-interface CreateAssistantEntityOptions {
+export interface CreateAssistantEntityOptions {
+  id?: string
+  createdAt?: number
   openaiId: string
   userId: string
   description: string
   instructions: string
-  model: ModelType
+  model: GptModelType
   name: string
   temperature: number
   topP: number
@@ -21,17 +23,16 @@ export class AssistantEntity {
     private readonly _userId: string,
     private _description: string,
     private _instructions: string,
-    private _model: ModelType,
+    private _model: GptModelType,
     private _name: string,
     private _temperature: number,
     private _topP: number
   ) {}
 
   public static create(options: CreateAssistantEntityOptions): AssistantEntity {
-    const createdAt = new Date().getTime()
-    const id = UUID.nano()
-
     const {
+      id = UUID.nano(),
+      createdAt = new Date().getTime(),
       openaiId,
       userId,
       description,
@@ -80,7 +81,7 @@ export class AssistantEntity {
     return this._instructions
   }
 
-  public get model(): ModelType {
+  public get model(): GptModelType {
     return this._model
   }
 

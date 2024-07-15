@@ -8,9 +8,11 @@ export class AssistantMapper {
   static toEntity(
     dto: CreateAssistantDto,
     openaiId: string,
-    userId: string
+    userId: string,
+    id?: string
   ): AssistantEntity {
     const entity = AssistantEntity.create({
+      id,
       openaiId,
       userId,
       description: dto.description,
@@ -40,7 +42,6 @@ export class AssistantMapper {
     const dto = ClientAssistantDto.create({
       assistantDto,
       id: entity.id,
-      userId: entity.userId,
     })
     return dto
   }

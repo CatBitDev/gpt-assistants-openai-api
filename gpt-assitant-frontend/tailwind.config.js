@@ -5,10 +5,10 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ["Inter Variable", "sans-serif"],
-        mono: ["DM Mono", "monospace"],
+        mono: ["JetBrains Mono Variable", "monospace"],
       },
     },
   },
   plugins: [],
-  corePlugins: { preflight: false },
+  // corePlugins: { preflight: false },
 };
